@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Cupid - Create Your Love Letter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe3e3 0%, #ffd1d1 100%);
+            min-height: 100vh;
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Magical Box Splitting Transition */
+        .box-gate {
+            position: fixed;
+            top: 0;
+            width: 50vw;
+            height: 100vh;
+            background-color: #ff7675;
+            z-index: 9999;
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .gate-left { left: 0; justify-content: flex-end; border-right: 4px solid #ffeaa7; }
+        .gate-right { right: 0; justify-content: flex-start; border-left: 4px solid #ffeaa7; }
+
+        .gate-left::after, .gate-right::after {
+            content: '';
+            position: absolute;
+            background-color: #e84393;
+            width: 100%;
+            height: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        body.loaded .gate-left { transform: translateX(-100%); }
+        body.loaded .gate-right { transform: translateX(100%); }
+
+        header {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            color: #d63031;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #4a4a4a;
+            font-style: italic;
+        }
+
+        .workspace-container {
+            width: 90%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+            z-index: 10;
+        }
+
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #d63031;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #ffccd5;
+            padding-bottom: 5px;
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .btn-template {
+            background-color: #fff;
+            border: 2px solid #ffccd5;
+            padding: 12px 5px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+            color: #d63031;
+            transition: all 0.3s ease;
+        }
+
+        .btn-template:hover, .btn-template.active {
+            background-color: #ff7675;
+            color: #fff;
+            border-color: #ff7675;
+            box-shadow: 0 5px 15px rgba(255, 118, 117, 0.3);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 15px;
+            border: 2px solid #ffccd5;
+            border-radius: 12px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            background-color: #fff8f8;
+        }
+
+        /* Finish Button Styling */
+        .btn-finish {
+            background: linear-gradient(135deg, #d63031 0%, #e84393 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(214, 48, 49, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+            align-self: center;
+            margin-top: 10px;
+        }
+
+        .btn-finish:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(214, 48, 49, 0.6);
+        }
+
+        /* Preview Panel Styling */
+        .preview-panel {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .stationery {
+            width: 100%;
+            max-width: 450px;
+            aspect-ratio: 1 / 1.414;
+            background-color: #fcfbf7;
+            background-image: linear-gradient(rgba(224, 182, 182, 0.15) 1px, transparent 1px);
+            background-size: 100% 2.2rem;
+            padding: 50px 40px;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .theme-romantic { background-color: #fff5f5; box-shadow: 0 10px 25px rgba(0,0,0,0.08), 0 0 0 10px #fff5f5, 0 0 0 12px #ff7675; }
+        .theme-apology { background-color: #f5f6fa; box-shadow: 0 10px 25px rgba(0,0,0,0.08), 0 0 0 10px #f5f6fa, 0 0 0 12px #74b9ff; }
+        .theme-longdistance { background-color: #fafaf0; box-shadow: 0 10px 25px rgba(0,0,0,0.08), 0 0 0 10px #fafaf0, 0 0 0 12px #a29bfe; }
+
+        .letter-content {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.6rem;
+            line-height: 2.2rem;
+            color: #2c3e50;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Great Vibes', cursive;
+            font-size: 1.5rem;
+            color: rgba(214, 48, 49, 0.15);
+        }
+
+        /* --- Romantic Outro Animation Elements --- */
+        .balloon-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99999;
+            pointer-events: none;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -150px;
+            width: 60px;
+            height: 75px;
+            background: #ff7675;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            animation: floatUpAnimation 3s forwards ease-in;
+        }
+
+        /* Heart shaped balloon variation */
+        .balloon.heart-shape {
+            width: 50px;
+            height: 50px;
+            transform: rotate(-45deg);
+            background: #e84393;
+            border-radius: 0;
+        }
+        .balloon.heart-shape::before, .balloon.heart-shape::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #e84393;
+            border-radius: 50%;
+        }
+        .balloon.heart-shape::before { top: -25px; left: 0; }
+        .balloon.heart-shape::after { left: 25px; top: 0; }
+
+        /* String hanging from balloon */
+        .balloon::after {
+            content: "";
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            width: 2px;
+            height: 30px;
+            background: rgba(0,0,0,0.2);
+        }
+        .balloon.heart-shape::after {
+            transform: rotate(45deg);
+            bottom: -25px;
+            left: 10px;
+        }
+
+        @keyframes floatUpAnimation {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .workspace-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box-gate gate-left"></div>
+    <div class="box-gate gate-right"></div>
+    <div class="balloon-overlay" id="balloonOverlay"></div>
+
+    <header>
+        <h1>Paper Cupid</h1>
+        <p>Your feelings, beautifully styled on virtual linen</p>
+    </header>
+
+    <main class="workspace-container">
+        <section class="controls-panel">
+            <div>
+                <h2 class="section-title">1. Choose a Template</h2>
+                <div class="template-selector">
+                    <button class="btn-template active" onclick="selectTemplate('romantic', this)">Romantic</button>
+                    <button class="btn-template" onclick="selectTemplate('apology', this)">Apology</button>
+                    <button class="btn-template" onclick="selectTemplate('distance', this)">Long Distance</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <h2 class="section-title">2. Write From the Heart</h2>
+                <textarea id="letterInput" placeholder="Pour your soul out here..." oninput="updateLetter()"></textarea>
+                <button class="btn-finish" onclick="finishLetter()">Finish Letter →</button>
+            </div>
+        </section>
+
+        <section class="preview-panel">
+            <div class="stationery" id="stationeryPaper">
+                <div class="letter-content" id="letterPreview"></div>
+                <div class="watermark">Paper Cupid</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const templates = {
+            romantic: "My dearest,\n\nFrom the moment I met you, my heart found its home. Every small detail about you makes my day a little brighter. I love you more with every passing sunset.",
+            apology: "My dearest,\n\nI am writing this because sometimes words fail me when we speak. I am deeply sorry for letting you down. You deserve my absolute best, and I promise to try harder.",
+            distance: "My dearest,\n\nThough miles lie between us right now, you are closer to my heart than ever. Every tick of the clock brings me one second closer to when I hold you again."
+        };
+
+        let currentTheme = 'romantic';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { document.body.classList.add('loaded'); }, 300);
+            document.getElementById('letterInput').value = templates.romantic;
+            updateLetter();
+            applyTheme('romantic');
+        });
+
+        function updateLetter() {
+            const inputVal = document.getElementById('letterInput').value;
+            document.getElementById('letterPreview').innerText = inputVal;
+        }
+
+        function selectTemplate(type, element) {
+            document.querySelectorAll('.btn-template').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById('letterInput').value = templates[type];
+            updateLetter();
+            applyTheme(type);
+        }
+
+        function applyTheme(type) {
+            currentTheme = type;
+            const paper = document.getElementById('stationeryPaper');
+            paper.className = 'stationery';
+            if (type === 'romantic') paper.classList.add('theme-romantic');
+            else if (type === 'apology') paper.classList.add('theme-apology');
+            else if (type === 'distance') paper.classList.add('theme-longdistance');
+        }
+
+        // Save letter and trigger transition
+        function finishLetter() {
+            const finalContent = document.getElementById('letterInput').value;
+            localStorage.setItem('savedLetterText', finalContent);
+            localStorage.setItem('savedLetterTheme', currentTheme);
+
+            const overlay = document.getElementById('balloonOverlay');
+            
+            // Create a burst of floating balloons
+            for (let i = 0; i < 25; i++) {
+                setTimeout(() => {
+                    const balloon = document.createElement('div');
+                    const isHeart = Math.random() > 0.4;
+                    balloon.className = isHeart ? 'balloon heart-shape' : 'balloon';
+                    
+                    balloon.style.left = Math.random() * 100 + 'vw';
+                    balloon.style.animationDelay = Math.random() * 0.5 + 's';
+                    balloon.style.backgroundColor = ['#ff7675', '#e84393', '#fd79a8', '#a29bfe'][Math.floor(Math.random() * 4)];
+                    
+                    overlay.appendChild(balloon);
+                }, i * 40);
+            }
+
+            // Redirect to the presentation page after animation finishes
+            setTimeout(() => {
+                window.location.href = 'letter.html';
+            }, 2500);
+        }
+    </script>
+</body>
+</html>

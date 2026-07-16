@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>"Paper Cupid"</title>
+    <!-- Google Fonts for a romantic, lovely script -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe3e3 0%, #ffd1d1 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Floating Hearts Background Styling */
+        .hearts-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .heart {
+            position: absolute;
+            background-color: rgba(255, 107, 107, 0.4);
+            display: inline-block;
+            height: 30px;
+            margin: 0 10px;
+            transform: rotate(-45deg);
+            width: 30px;
+            animation: floatUp 8s infinite linear;
+            bottom: -50px;
+        }
+
+        .heart:before,
+        .heart:after {
+            content: "";
+            background-color: rgba(255, 107, 107, 0.4);
+            border-radius: 50%;
+            position: absolute;
+            width: 30px;
+            height: 30px;
+        }
+
+        .heart:before {
+            top: -15px;
+            left: 0;
+        }
+
+        .heart:after {
+            top: 0;
+            left: 15px;
+        }
+
+        /* Customizing positions and timing for floating hearts */
+        .heart:nth-child(1) { left: 10%; animation-duration: 7s; transform: scale(0.6) rotate(-45deg); }
+        .heart:nth-child(2) { left: 25%; animation-duration: 9s; animation-delay: 2s; transform: scale(1) rotate(-45deg); }
+        .heart:nth-child(3) { left: 45%; animation-duration: 7s; animation-delay: 1s; transform: scale(0.8) rotate(-45deg); }
+        .heart:nth-child(4) { left: 70%; animation-duration: 10s; transform: scale(1.2) rotate(-45deg); }
+        .heart:nth-child(5) { left: 85%; animation-duration: 8s; animation-delay: 3s; transform: scale(0.7) rotate(-45deg); }
+
+        @keyframes floatUp {
+            0% {
+                bottom: -50px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                bottom: 105vh;
+                opacity: 0;
+            }
+        }
+
+        /* Main Container */
+        .intro-container {
+            z-index: 2;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .intro-container:hover {
+            transform: scale(1.03);
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4.5rem;
+            color: #d63031;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Cute CSS Gift Box */
+        .gift-box {
+            width: 150px;
+            height: 150px;
+            background-color: #ff7675;
+            position: relative;
+            margin: 0 auto 30px auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            animation: gentleBounce 2s infinite ease-in-out;
+        }
+
+        /* Box Lid */
+        .gift-box::before {
+            content: '';
+            position: absolute;
+            width: 160px;
+            height: 40px;
+            background-color: #ce3d3d;
+            left: -5px;
+            top: 0;
+            border-radius: 5px;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        /* Ribbon Lines */
+        .ribbon-vertical {
+            position: absolute;
+            background-color: #fcefc2;
+            width: 25px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .ribbon-horizontal {
+            position: absolute;
+            background-color: #ffeaa7;
+            width: 100%;
+            height: 25px;
+            top: 50px;
+            z-index: 1;
+        }
+
+        /* Ribbon Bow */
+        .bow {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            display: flex;
+        }
+
+        .bow-left, .bow-right {
+            width: 35px;
+            height: 30px;
+            border: 5px solid #ffeaa7;
+            border-radius: 50%;
+        }
+        .bow-left { transform: rotate(-30deg) translateX(5px); }
+        .bow-right { transform: rotate(30deg) translateX(-5px); }
+
+        /* Action Text */
+        .click-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.8rem;
+            color: #d63031;
+            letter-spacing: 1px;
+            animation: pulseText 1.5s infinite ease-in-out;
+        }
+
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.7; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* --- Magical Exit Splitting Animation Styles --- */
+        .box-gate-exit {
+            position: fixed;
+            top: 0;
+            width: 50vw;
+            height: 100vh;
+            background-color: #ff7675;
+            z-index: 99999;
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .exit-left {
+            left: 0;
+            border-right: 4px solid #ffeaa7;
+            transform: translateX(-100%);
+        }
+
+        .exit-right {
+            right: 0;
+            border-left: 4px solid #ffeaa7;
+            transform: translateX(100%);
+        }
+
+        .exit-left::after, .exit-right::after {
+            content: '';
+            position: absolute;
+            background-color: #e84393;
+            width: 100%;
+            height: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        body.exiting .box-gate-exit {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .box-gate-exit { width: 100vw; height: 50vh; }
+            .exit-left { top: 0; left: 0; transform: translateY(-100%); border-right: none; border-bottom: 4px solid #ffeaa7; }
+            .exit-right { bottom: 0; right: 0; top: auto; transform: translateY(100%); border-left: none; border-top: 4px solid #ffeaa7; }
+            body.exiting .exit-left { transform: translateY(0); }
+            body.exiting .exit-right { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Exit Animation Gates -->
+    <div class="box-gate-exit exit-left"></div>
+    <div class="box-gate-exit exit-right"></div>
+
+    <!-- Floating Hearts Background -->
+    <div class="hearts-background">
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+    </div>
+
+    <!-- Main Interactive Landing Content -->
+    <div class="intro-container" onclick="navigateToNextPage('store.html')">
+        <h1>Paper Cupid</h1>
+        
+        <div class="gift-box">
+            <div class="bow">
+                <div class="bow-left"></div>
+                <div class="bow-right"></div>
+            </div>
+            <div class="ribbon-vertical"></div>
+            <div class="ribbon-horizontal"></div>
+        </div>
+
+        <div class="click-text">Click for a surprise</div>
+    </div>
+
+    <script>
+        // Universal navigation wrapper that triggers the gift box closing sequence first
+        function navigateToNextPage(targetUrl) {
+            document.body.classList.add('exiting');
+            
+            // Wait for the visual curtain slam before executing the page redirect
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 1100);
+        }
+
+        // Check if visitors clicked a link shared by creators
+        const urlParams = new URLSearchParams(window.location.search);
+        const introContainer = document.querySelector('.intro-container');
+
+        if (introContainer && urlParams.has('letter')) {
+            // Direct share route: Go straight to presentation view via exit animation
+            introContainer.setAttribute('onclick', "navigateToNextPage('letter.html' + window.location.search)");
+        }
+    </script>
+</body>
+</html>
